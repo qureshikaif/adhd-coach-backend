@@ -23,6 +23,21 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installation
 
 1. Clone the repo
+
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/qureshikaif/adhd-coach-backend.git
    ```
+
+2. Install packages
+
+NPM:
+
+```sh
+   npm i
+```
+
+Yarn:
+
+```sh
+yarn add
+```
