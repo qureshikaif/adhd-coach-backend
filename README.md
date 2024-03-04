@@ -30,14 +30,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 2. Install packages
 
-NPM:
+   Npm:
 
-```sh
-   npm i
-```
+   ```sh
+      npm i
+   ```
 
-Yarn:
+   Yarn:
 
-```sh
-yarn add
-```
+   ```sh
+   yarn add
+   ```
