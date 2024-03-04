@@ -33,7 +33,7 @@ These instructions will get you a copy of the project up and running on your loc
    Npm:
 
    ```sh
-      npm i
+   npm i
    ```
 
    Yarn:
@@ -41,3 +41,15 @@ These instructions will get you a copy of the project up and running on your loc
    ```sh
    yarn add
    ```
+
+### Usage
+
+The main file of this project is server.ts. To run this project in development mode, use the following command:
+
+```
+npm run dev
+```
+
+### Contribution
+
+Any contributions you make are **greatly appreciated**.
