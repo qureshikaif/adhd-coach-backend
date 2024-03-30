@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
+import { pool } from "./db";
 
 const app = express();
 const server = http.createServer(app);
@@ -16,15 +17,15 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req: express.Request, res: express.Response) => {
-  res.json({ message: "Hello World" });
+  res.json({ message: "Hello World", pool });
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("a user connected", socket.id);
 
-  socket.on("chat message", (msg) => {
+  socket.on("send message", (msg) => {
     console.log("message: " + msg);
-    io.emit("chat message", msg);
+    socket.broadcast.emit("recieve message", msg);
   });
 
   socket.on("disconnect", () => {
