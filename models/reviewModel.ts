@@ -1,4 +1,4 @@
-import pool from "../db.ts";
+import pool from "../db";
 
 export const createReview = async (review: any) => {
   const { courseId, userId, rating, comment } = review;

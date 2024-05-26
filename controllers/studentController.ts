@@ -1,8 +1,8 @@
 import {
   createAssessment,
   getAssessmentsByStudentId,
-} from "../models/assessmentModal.js";
-import { createUser, findUserByEmail } from "../models/userModel.js";
+} from "../models/assessmentModal";
+import { createUser, findUserByEmail } from "../models/userModel";
 import bcrypt from "bcrypt";
 import express from "express";
 

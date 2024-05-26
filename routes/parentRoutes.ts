@@ -4,7 +4,7 @@ import {
   readArticles,
   parentChat,
   viewParentProfile,
-} from "../controllers/parentController.js";
+} from "../controllers/parentController";
 
 const router = express.Router();
 

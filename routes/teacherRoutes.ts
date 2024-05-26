@@ -4,7 +4,7 @@ import {
   addLectureOrAssignment,
   teacherChat,
   viewTeacherProfile,
-} from "../controllers/teacherController.js";
+} from "../controllers/teacherController";
 
 const router = express.Router();
 

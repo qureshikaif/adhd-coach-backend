@@ -4,7 +4,7 @@ import {
   playGames,
   giveGrandTest,
   signup,
-} from "../controllers/studentController.ts";
+} from "../controllers/studentController";
 
 const router = express.Router();
 

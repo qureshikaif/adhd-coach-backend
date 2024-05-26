@@ -1,5 +1,5 @@
 import pool from "../db";
-import { ArticleType } from "../types/ArticleType.ts";
+import { ArticleType } from "../types/ArticleType";
 
 export const createArticle = async (article: ArticleType) => {
   const { title, subtitle, tags, content, summary, adminId } = article;

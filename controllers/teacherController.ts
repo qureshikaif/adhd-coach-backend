@@ -1,6 +1,6 @@
-import { getCourseById } from "../models/courseModel.js";
-import { createChatMessage, getChatMessages } from "../models/chatModel.js";
-import { findUserById } from "../models/userModel.js";
+import { getCourseById } from "../models/courseModel";
+import { createChatMessage, getChatMessages } from "../models/chatModel";
+import { findUserById } from "../models/userModel";
 import express from "express";
 
 export const viewCourseStatistics = async (

@@ -1,4 +1,4 @@
-import pool from "../db.ts";
+import pool from "../db";
 
 export const createAssessment = async (assessment: any) => {
   const { studentId, score } = assessment;

@@ -1,7 +1,7 @@
-import { getAssessmentsByStudentId } from "../models/assessmentModal.ts";
-import { getAllArticles } from "../models/articleModel.js";
-import { createChatMessage } from "../models/chatModel.js";
-import { findUserById } from "../models/userModel.js";
+import { getAssessmentsByStudentId } from "../models/assessmentModal";
+import { getAllArticles } from "../models/articleModel";
+import { createChatMessage } from "../models/chatModel";
+import { findUserById } from "../models/userModel";
 import express from "express";
 
 export const viewChildProgress = async (

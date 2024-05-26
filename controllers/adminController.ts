@@ -2,11 +2,11 @@ import {
   createCourse,
   getCourseById,
   getAllCourses,
-} from "../models/courseModel.js";
-import { createArticle } from "../models/articleModel.js";
-import { getReviewsByCourseId } from "../models/reviewModel.js";
-import { createChatMessage, getChatMessages } from "../models/chatModel.js";
-import pool from "../db.ts";
+} from "../models/courseModel";
+import { createArticle } from "../models/articleModel";
+import { getReviewsByCourseId } from "../models/reviewModel";
+import { createChatMessage, getChatMessages } from "../models/chatModel";
+import pool from "../db";
 import express from "express";
 
 export const addCourse = async (

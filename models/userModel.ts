@@ -1,4 +1,4 @@
-import pool from "../db.ts";
+import pool from "../db";
 import { UserType } from "../types/userType";
 
 export const createUser = async (user: UserType) => {

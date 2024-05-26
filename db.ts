@@ -96,7 +96,7 @@ createTable(
    tags TEXT,
    content TEXT,
    summary TEXT,
-   admin_id INT REFERENCES admins(id)`
+   admin_id INT REFERENCES admin(id)`
 );
 
 // Chats table

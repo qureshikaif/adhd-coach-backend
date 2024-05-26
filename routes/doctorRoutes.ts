@@ -5,7 +5,7 @@ import {
   prescribeMedicine,
   doctorChat,
   viewDoctorProfile,
-} from "../controllers/doctorController.js";
+} from "../controllers/doctorController";
 
 const router = express.Router();
 

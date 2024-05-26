@@ -1,6 +1,6 @@
-import { getAppointmentsByDoctorId } from "../models/appointmentModel.js";
-import { findUserById } from "../models/userModel.js";
-import { createChatMessage } from "../models/chatModel.js";
+import { getAppointmentsByDoctorId } from "../models/appointmentModel";
+import { findUserById } from "../models/userModel";
+import { createChatMessage } from "../models/chatModel";
 import express from "express";
 
 export const viewAppointments = async (

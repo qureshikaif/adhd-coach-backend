@@ -1,5 +1,5 @@
-import pool from "../db.ts";
-import { CourseType } from "../types/CourseType.ts";
+import pool from "../db";
+import { CourseType } from "../types/CourseType";
 
 export const createCourse = async (course: CourseType) => {
   const { name, description, instructor, rating, students } = course;

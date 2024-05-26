@@ -1,4 +1,4 @@
-import pool from "../db.ts";
+import pool from "../db";
 
 export const createChatMessage = async (chat: any) => {
   const { senderId, receiverId, message } = chat;

@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../models/userModel.js";
+import { createUser, findUserByEmail } from "../models/userModel";
 
 const signup = async (req: express.Request, res: express.Response) => {
   const { fullName, email, password, role } = req.body;

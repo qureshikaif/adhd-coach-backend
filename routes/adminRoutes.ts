@@ -5,7 +5,7 @@ import {
   viewUserProfiles,
   viewCourseDetails,
   adminChat,
-} from "../controllers/adminController.js";
+} from "../controllers/adminController";
 
 const router = express.Router();
 

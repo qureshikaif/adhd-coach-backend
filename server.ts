@@ -1,14 +1,14 @@
+import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
-import { Server } from "socket.io";
 import http from "http";
-import pool from "./db.ts";
-import authRoutes from "./routes/authRoutes.ts";
-import adminRoutes from "./routes/adminRoutes.ts";
-import parentRoutes from "./routes/parentRoutes.ts";
-import teacherRoutes from "./routes/teacherRoutes.ts";
-import doctorRoutes from "./routes/doctorRoutes.ts";
-import studentRoutes from "./routes/studentRoutes.ts";
+import pool from "./db";
+import authRoutes from "./routes/authRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import parentRoutes from "./routes/parentRoutes";
+import teacherRoutes from "./routes/teacherRoutes";
+import doctorRoutes from "./routes/doctorRoutes";
+import studentRoutes from "./routes/studentRoutes";
 
 const app = express();
 const server = http.createServer(app);

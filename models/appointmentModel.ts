@@ -1,4 +1,4 @@
-import pool from "../db.ts";
+import pool from "../db";
 
 export const createAppointment = async (appointment: any) => {
   const { doctorId, studentId, time, reason } = appointment;
