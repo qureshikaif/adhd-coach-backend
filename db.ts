@@ -14,7 +14,7 @@ const pool = new Pool({
   },
 });
 
-const createTable = async (tableName: string, columns: string) => {
+const createTable = async (tableName, columns) => {
   const result = await pool.query(
     `
         SELECT EXISTS (
@@ -30,29 +30,112 @@ const createTable = async (tableName: string, columns: string) => {
   }
 };
 
+// Users table (common for all user types)
 createTable(
-  "courses",
-  "id SERIAL PRIMARY KEY, title TEXT, description TEXT, price TEXT, image TEXT, instructor TEXT, rating TEXT, students TEXT, duration TEXT, on_sale BOOLEAN, expiry TEXT, royalties TEXT, token_id TEXT, collection_address TEXT, image_ipfs_hash TEXT, nft_ipfs_hash TEXT"
+  "users",
+  `id SERIAL PRIMARY KEY,
+   full_name TEXT NOT NULL,
+   email TEXT UNIQUE NOT NULL,
+   password TEXT NOT NULL,
+   role TEXT NOT NULL CHECK (role IN ('admin', 'parent', 'teacher', 'doctor', 'student'))`
 );
 
+// Admin table
 createTable(
-  "students",
-  "id SERIAL PRIMARY KEY, email TEXT, primary_owner TEXT, title TEXT, image_name TEXT, image_url TEXT, description TEXT, writer TEXT, genre TEXT, characters TEXT, runtime TEXT, on_sale BOOLEAN, price TEXT, expiry TEXT, royalties TEXT, token_id TEXT, collection_address TEXT, image_ipfs_hash TEXT, nft_ipfs_hash TEXT"
+  "admin",
+  `id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES users(id)`
 );
 
+// Parent table
 createTable(
   "parents",
-  "id SERIAL PRIMARY KEY, username TEXT, password TEXT, email TEXT, wallet_address TEXT, role TEXT"
+  `id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES users(id),
+   child_id INT REFERENCES students(id)`
 );
 
-createTable(
-  "doctors",
-  "id SERIAL PRIMARY KEY, name , seller TEXT, token_id TEXT, price TEXT, transaction_date TEXT"
-);
-
+// Teacher table
 createTable(
   "teachers",
-  "id SERIAL PRIMARY KEY, buyer TEXT, seller TEXT, token_id TEXT, price TEXT, transaction_date TEXT"
+  `id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES users(id)`
+);
+
+// Doctor table
+createTable(
+  "doctors",
+  `id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES users(id)`
+);
+
+// Student table
+createTable(
+  "students",
+  `id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES users(id)`
+);
+
+// Courses table
+createTable(
+  "courses",
+  `id SERIAL PRIMARY KEY,
+   name TEXT,
+   description TEXT,
+   instructor INT REFERENCES teachers(id),
+   rating TEXT,
+   students TEXT`
+);
+
+// Articles table
+createTable(
+  "articles",
+  `id SERIAL PRIMARY KEY,
+   title TEXT,
+   subtitle TEXT,
+   tags TEXT,
+   content TEXT,
+   summary TEXT,
+   admin_id INT REFERENCES admins(id)`
+);
+
+// Chats table
+createTable(
+  "chats",
+  `id SERIAL PRIMARY KEY,
+   sender_id INT REFERENCES users(id),
+   receiver_id INT REFERENCES users(id),
+   message TEXT,
+   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+);
+
+// Appointments table
+createTable(
+  "appointments",
+  `id SERIAL PRIMARY KEY,
+   doctor_id INT REFERENCES doctors(id),
+   student_id INT REFERENCES students(id),
+   time TIMESTAMP,
+   reason TEXT`
+);
+
+// Reviews table
+createTable(
+  "reviews",
+  `id SERIAL PRIMARY KEY,
+   course_id INT REFERENCES courses(id),
+   user_id INT REFERENCES users(id),
+   rating INT,
+   comment TEXT`
+);
+
+// Assessments table
+createTable(
+  "assessments",
+  `id SERIAL PRIMARY KEY,
+   student_id INT REFERENCES students(id),
+   score INT,
+   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 );
 
 export { pool };
