@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import "dotenv/config";
 
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const pool = new Pool({
   host: PGHOST,
@@ -14,7 +14,7 @@ const pool = new Pool({
   },
 });
 
-const createTable = async (tableName, columns) => {
+const createTable = async (tableName: string, columns: string) => {
   const result = await pool.query(
     `
         SELECT EXISTS (
@@ -138,4 +138,4 @@ createTable(
    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 );
 
-export { pool };
+export default pool;
