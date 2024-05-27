@@ -4,15 +4,23 @@ import "dotenv/config";
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const pool = new Pool({
-  host: PGHOST,
-  database: PGDATABASE,
-  user: PGUSER,
-  password: PGPASSWORD,
+  host: "localhost",
+  database: "adhdcoach",
+  user: "postgres",
+  password: "db123",
   port: 5432,
-  ssl: {
-    rejectUnauthorized: false,
-  },
 });
+
+// const pool = new Pool({
+//   host: PGHOST,
+//   database: PGDATABASE,
+//   user: PGUSER,
+//   password: PGPASSWORD,
+//   port: 5432,
+//   ssl: {
+//     rejectUnauthorized: false,
+//   },
+// });
 
 const createTable = async (tableName: string, columns: string) => {
   const result = await pool.query(
@@ -30,28 +38,22 @@ const createTable = async (tableName: string, columns: string) => {
   }
 };
 
-// Users table (common for all user types)
-createTable(
-  "users",
-  `id SERIAL PRIMARY KEY,
-   full_name TEXT NOT NULL,
-   email TEXT UNIQUE NOT NULL,
-   password TEXT NOT NULL,
-   role TEXT NOT NULL CHECK (role IN ('admin', 'parent', 'teacher', 'doctor', 'student'))`
-);
-
 // Admin table
 createTable(
   "admin",
   `id SERIAL PRIMARY KEY,
-   user_id INT REFERENCES users(id)`
+   full_name TEXT NOT NULL,
+   email TEXT UNIQUE NOT NULL,
+   password TEXT NOT NULL`
 );
 
 // Parent table
 createTable(
   "parents",
   `id SERIAL PRIMARY KEY,
-   user_id INT REFERENCES users(id),
+  full_name TEXT NOT NULL,
+   email TEXT UNIQUE NOT NULL,
+   password TEXT NOT NULL,   
    child_id INT REFERENCES students(id)`
 );
 
@@ -59,21 +61,29 @@ createTable(
 createTable(
   "teachers",
   `id SERIAL PRIMARY KEY,
-   user_id INT REFERENCES users(id)`
+    id_assigned INT,
+  full_name TEXT,
+  email TEXT UNIQUE,
+  password TEXT`
 );
 
 // Doctor table
 createTable(
   "doctors",
   `id SERIAL PRIMARY KEY,
-   user_id INT REFERENCES users(id)`
+  id_assigned INT,
+  full_name TEXT,
+   email TEXT UNIQUE,
+   password TEXT`
 );
 
 // Student table
 createTable(
   "students",
   `id SERIAL PRIMARY KEY,
-   user_id INT REFERENCES users(id)`
+  full_name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL`
 );
 
 // Courses table
@@ -95,19 +105,18 @@ createTable(
    subtitle TEXT,
    tags TEXT,
    content TEXT,
-   summary TEXT,
-   admin_id INT REFERENCES admin(id)`
+   summary TEXT`
 );
 
 // Chats table
-createTable(
-  "chats",
-  `id SERIAL PRIMARY KEY,
-   sender_id INT REFERENCES users(id),
-   receiver_id INT REFERENCES users(id),
-   message TEXT,
-   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
-);
+// createTable(
+//   "chats",
+//   `id SERIAL PRIMARY KEY,
+//    sender_id INT REFERENCES users(id),
+//    receiver_id INT REFERENCES users(id),
+//    message TEXT,
+//    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+// );
 
 // Appointments table
 createTable(
@@ -124,18 +133,26 @@ createTable(
   "reviews",
   `id SERIAL PRIMARY KEY,
    course_id INT REFERENCES courses(id),
-   user_id INT REFERENCES users(id),
+   user_id INT REFERENCES students(id),
    rating INT,
    comment TEXT`
 );
 
 // Assessments table
 createTable(
-  "assessments",
+  "main_assessment",
   `id SERIAL PRIMARY KEY,
-   student_id INT REFERENCES students(id),
    score INT,
    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+);
+
+createTable(
+  "assessments",
+  `id SERIAL PRIMARY KEY,
+  student_id INT REFERENCES students(id),
+  score INT,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  type TEXT`
 );
 
 export default pool;

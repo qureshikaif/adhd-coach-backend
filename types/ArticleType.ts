@@ -4,5 +4,5 @@ export type ArticleType = {
   tags: string;
   content: string;
   summary: string;
-  adminId: string;
+  adminId?: string;
 };

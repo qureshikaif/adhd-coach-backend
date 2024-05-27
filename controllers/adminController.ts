@@ -1,11 +1,7 @@
-import {
-  createCourse,
-  getCourseById,
-  getAllCourses,
-} from "../models/courseModel";
+import { createCourse, getCourseById } from "../models/courseModel";
 import { createArticle } from "../models/articleModel";
 import { getReviewsByCourseId } from "../models/reviewModel";
-import { createChatMessage, getChatMessages } from "../models/chatModel";
+import { createChatMessage } from "../models/chatModel";
 import pool from "../db";
 import express from "express";
 
@@ -26,7 +22,7 @@ export const addArticle = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { title, subtitle, tags, content, summary, adminId } = req.body;
+  const { title, subtitle, tags, content, summary } = req.body;
   try {
     const article = await createArticle({
       title,
@@ -34,9 +30,43 @@ export const addArticle = async (
       tags,
       content,
       summary,
-      adminId,
     });
     res.status(201).json(article);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const addDoctor = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { doctorId } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO doctors (id_assigned) VALUES ($1) RETURNING *",
+      [doctorId]
+    );
+    return res
+      .status(201)
+      .json({ message: "Doctor added successfully", result: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const addTeacher = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { teacherId } = req.body;
+  console.log(teacherId);
+  try {
+    const result = await pool.query(
+      "INSERT INTO teachers (id_assigned) VALUES ($1)",
+      [teacherId]
+    );
+    return res.status(201).json({ message: "Teacher added successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
