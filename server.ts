@@ -11,7 +11,7 @@ import doctorRoutes from "./routes/doctorRoutes";
 import studentRoutes from "./routes/studentRoutes";
 
 const app = express();
-const server = http.createServer(app);
+// const server = http.createServer(app);
 
 // const io = new Server(server, {
 //   cors: {
@@ -46,6 +46,6 @@ app.use("/student", studentRoutes);
 //   });
 // });
 
-server.listen(8080, () => {
+app.listen(8080, () => {
   console.log("Server is running on port 8080");
 });
