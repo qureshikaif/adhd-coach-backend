@@ -2,10 +2,10 @@ import pool from "../db";
 import { CourseType } from "../types/CourseType";
 
 export const createCourse = async (course: CourseType) => {
-  const { name, description, instructor, rating, students } = course;
+  const { name, description, instructor } = course;
   const result = await pool.query(
-    "INSERT INTO courses (name, description, instructor, rating, students) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-    [name, description, instructor, rating, students]
+    "INSERT INTO courses (name, description, instructor) VALUES ($1, $2, $3) RETURNING *",
+    [name, description, instructor]
   );
   return result.rows[0];
 };

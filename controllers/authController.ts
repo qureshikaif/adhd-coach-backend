@@ -10,7 +10,6 @@ const signup = async (req: express.Request, res: express.Response) => {
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists " });
     }
-    console.log("1");
     if (role.toLowerCase() === "student") {
       const studentId = Math.floor(Math.random() * 1000000);
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -77,7 +76,6 @@ const signup = async (req: express.Request, res: express.Response) => {
 
 const signin = async (req: express.Request, res: express.Response) => {
   const { email, password, role } = req.body;
-  console.log(req.body);
   try {
     const user = await findUserByEmail(email, role);
     if (!user) {

@@ -31,7 +31,7 @@ export const addArticle = async (
       content,
       summary,
     });
-    res.status(201).json(article);
+    res.status(201).json({ message: "Article added successfully", article });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
