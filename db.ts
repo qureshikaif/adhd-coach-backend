@@ -40,7 +40,7 @@ const createTable = async (tableName: string, columns: string) => {
 
 // Admin table
 createTable(
-  "admin",
+  "admins",
   `id SERIAL PRIMARY KEY,
    full_name TEXT NOT NULL,
    email TEXT UNIQUE NOT NULL,
@@ -48,20 +48,12 @@ createTable(
 );
 
 // Parent table
-createTable(
-  "parents",
-  `id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-   email TEXT UNIQUE NOT NULL,
-   password TEXT NOT NULL,   
-   child_id INT REFERENCES students(id)`
-);
 
 // Teacher table
 createTable(
   "teachers",
   `id SERIAL PRIMARY KEY,
-    id_assigned INT,
+  id_assigned INT,
   full_name TEXT,
   email TEXT UNIQUE,
   password TEXT`
@@ -83,7 +75,17 @@ createTable(
   `id SERIAL PRIMARY KEY,
   full_name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL`
+  password TEXT NOT NULL,
+  id_assigned INT UNIQUE NOT NULL`
+);
+
+createTable(
+  "parents",
+  `id SERIAL PRIMARY KEY,
+  full_name TEXT NOT NULL,
+   email TEXT UNIQUE NOT NULL,
+   password TEXT NOT NULL,   
+   child_id INT REFERENCES students(id_assigned)`
 );
 
 // Courses table
