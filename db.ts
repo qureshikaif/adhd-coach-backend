@@ -53,7 +53,7 @@ createTable(
 createTable(
   "teachers",
   `id SERIAL PRIMARY KEY,
-  id_assigned INT,
+  id_assigned INT UNIQUE NOT NULL,
   full_name TEXT,
   email TEXT UNIQUE,
   password TEXT`
@@ -94,7 +94,7 @@ createTable(
   `id SERIAL PRIMARY KEY,
    name TEXT,
    description TEXT,
-   instructor INT REFERENCES teachers(id),
+   instructor INT REFERENCES teachers(id_assigned),
    rating TEXT,
    students TEXT`
 );
