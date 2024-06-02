@@ -1,4 +1,8 @@
-import { createCourse, getCourseById } from "../models/courseModel";
+import {
+  createCourse,
+  findCourseByTitle,
+  getCourseById,
+} from "../models/courseModel";
 import { createArticle } from "../models/articleModel";
 import { getReviewsByCourseId } from "../models/reviewModel";
 import { createChatMessage } from "../models/chatModel";
@@ -11,6 +15,11 @@ export const addCourse = async (
 ) => {
   const { title, description, instructor } = req.body;
   try {
+    const existingCourse = await findCourseByTitle(title);
+    if (existingCourse) {
+      return res.status(400).json({ message: "Course already exists" });
+    }
+
     const course = await createCourse({ title, description, instructor });
     res.status(201).json(course);
   } catch (error) {

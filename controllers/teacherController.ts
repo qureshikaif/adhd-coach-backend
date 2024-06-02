@@ -77,3 +77,42 @@ export const getNumberOfTeachers = async (
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+export const getAllTeacherCourses = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const teacherId = req.params.id;
+  try {
+    const teacherQuery = `
+      SELECT
+        t.id,
+        t.id_assigned,
+        t.full_name,
+        t.email,
+        t.password,
+        t.personal_info,
+        json_agg(
+          json_build_object(
+            'id', c.id,
+            'title', c.title,
+            'description', c.description
+          )
+        ) AS courses
+      FROM teachers t
+      LEFT JOIN courses c ON t.id_assigned = c.instructor
+      WHERE t.id_assigned = $1
+      GROUP BY t.id, t.id_assigned, t.full_name, t.email, t.password, t.personal_info;
+    `;
+
+    const result = await pool.query(teacherQuery, [teacherId]);
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ messgae: "Teacher with id_assigned not found" });
+    }
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};

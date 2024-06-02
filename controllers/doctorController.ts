@@ -34,10 +34,13 @@ export const prescribeMedicine = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { patientId, prescription } = req.body;
+  const { prescription, patientId, doctorId } = req.body;
   try {
-    // Logic for saving prescription
-    res.status(201).json({ message: "Prescription added" });
+    const result = await pool.query(
+      "INSERT INTO prescriptions (prescription, patient_id, doctor_id) VALUES ($1, $2, $3)",
+      [prescription, patientId, doctorId]
+    );
+    res.status(201).json({ message: "Prescription added", result });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

@@ -6,6 +6,7 @@ import {
   viewTeacherProfile,
   getAllTeachers,
   getNumberOfTeachers,
+  getAllTeacherCourses,
 } from "../controllers/teacherController";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/chat", teacherChat);
 router.get("/profile/:teacherId", viewTeacherProfile);
 router.get("/get-teachers", getAllTeachers);
 router.get("/get-number", getNumberOfTeachers);
+router.get("/get-courses/:id", getAllTeacherCourses);
 
 export default router;

@@ -27,3 +27,10 @@ export const getAllCourses = async (
     return res.status(500).json({ message: "Server error", error });
   }
 };
+
+export const findCourseByTitle = async (title: string) => {
+  const result = await pool.query("SELECT * FROM courses WHERE title = $1", [
+    title,
+  ]);
+  return result.rows[0];
+};

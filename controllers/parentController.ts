@@ -18,18 +18,6 @@ export const viewChildProgress = async (
   }
 };
 
-// export const readArticles = async (
-//   req: express.Request,
-//   res: express.Response
-// ) => {
-//   try {
-//     const articles = await getAllArticles();
-//     res.status(200).json(articles);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
 export const parentChat = async (
   req: express.Request,
   res: express.Response
@@ -66,6 +54,32 @@ export const getAllParents = async (
       return { ...parent, role: "parent" };
     });
     res.status(200).json(parentsWithRole);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getChildPrescriptions = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const childId = req.params.id;
+  try {
+    const result = await pool.query(
+      `SELECT prescriptions.*, doctors.full_name AS doctor_name, doctors.personal_info AS doctor_info
+       FROM prescriptions
+       JOIN doctors ON prescriptions.doctor_id = doctors.id_assigned
+       WHERE prescriptions.patient_id = $1`,
+      [childId]
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No prescriptions found for this child" });
+    }
+
+    res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

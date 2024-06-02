@@ -54,49 +54,55 @@ createTable(
   "teachers",
   `id SERIAL PRIMARY KEY,
   id_assigned INT UNIQUE NOT NULL,
+  image TEXT,
   full_name TEXT,
   email TEXT UNIQUE,
-  password TEXT`
+  password TEXT,
+  personal_info TEXT`
 );
 
 // Doctor table
 createTable(
   "doctors",
   `id SERIAL PRIMARY KEY,
-  id_assigned INT,
+  id_assigned INT UNIQUE NOT NULL,
+  image TEXT,
   full_name TEXT,
    email TEXT UNIQUE,
-   password TEXT`
+   password TEXT,
+   personal_info TEXT`
 );
 
 // Student table
 createTable(
   "students",
   `id SERIAL PRIMARY KEY,
+  id_assigned INT UNIQUE NOT NULL,
+  image TEXT,
   full_name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  id_assigned INT UNIQUE NOT NULL`
+  personal_info TEXT`
 );
 
 createTable(
   "parents",
   `id SERIAL PRIMARY KEY,
+    image TEXT,
   full_name TEXT NOT NULL,
    email TEXT UNIQUE NOT NULL,
    password TEXT NOT NULL,   
-   child_id INT REFERENCES students(id_assigned)`
+   child_id INT REFERENCES students(id_assigned),
+   personal_info TEXT`
 );
 
 // Courses table
 createTable(
   "courses",
   `id SERIAL PRIMARY KEY,
-   title TEXT,
+   title TEXT UNIQUE NOT NULL,
    description TEXT,
-   instructor INT REFERENCES teachers(id_assigned),
-   rating TEXT,
-   students TEXT`
+   instructor INT REFERENCES teachers(id_assigned)`
 );
 
 // Articles table
@@ -110,34 +116,20 @@ createTable(
    summary TEXT`
 );
 
-// Chats table
-// createTable(
-//   "chats",
-//   `id SERIAL PRIMARY KEY,
-//    sender_id INT REFERENCES users(id),
-//    receiver_id INT REFERENCES users(id),
-//    message TEXT,
-//    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
-// );
-
-// Appointments table
-createTable(
-  "appointments",
-  `id SERIAL PRIMARY KEY,
-   doctor_id INT REFERENCES doctors(id),
-   student_id INT REFERENCES students(id),
-   time TIMESTAMP,
-   reason TEXT`
-);
-
 // Reviews table
 createTable(
-  "reviews",
+  "feedbacks",
   `id SERIAL PRIMARY KEY,
-   course_id INT REFERENCES courses(id),
-   user_id INT REFERENCES students(id),
-   rating INT,
-   comment TEXT`
+    feedback TEXT,
+   user_id INT REFERENCES students(id)`
+);
+
+createTable(
+  "prescriptions",
+  `id SERIAL PRIMARY KEY,
+   prescription TEXT,
+   patient_id INT REFERENCES students(id_assigned),
+   doctor_id INT REFERENCES doctors(id_assigned)`
 );
 
 // Assessments table
@@ -156,5 +148,35 @@ createTable(
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   type TEXT`
 );
+
+createTable(
+  "quizzes",
+  `id SERIAL PRIMARY KEY,
+  question TEXT,
+  option_1 TEXT,
+  option_2 TEXT,
+  option_3 TEXT,
+  option_4 TEXT,
+  answer TEXT,
+  instructor INT REFERENCES teachers(id_assigned)`
+);
+
+createTable(
+  "lectures",
+  `id SERIAL PRIMARY KEY,
+   lecture_link TEXT,
+   course_id INT REFERENCES courses(id),
+   instructor INT REFERENCES teachers(id_assigned)`
+);
+
+// Chats table
+// createTable(
+//   "chats",
+//   `id SERIAL PRIMARY KEY,
+//    sender_id INT REFERENCES users(id),
+//    receiver_id INT REFERENCES users(id),
+//    message TEXT,
+//    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+// );
 
 export default pool;
