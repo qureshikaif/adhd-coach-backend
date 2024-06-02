@@ -5,6 +5,7 @@ import {
   prescribeMedicine,
   doctorChat,
   viewDoctorProfile,
+  getAllDoctors,
 } from "../controllers/doctorController";
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get("/patient/:patientId", viewPatientProfile);
 router.post("/prescription", prescribeMedicine);
 router.post("/chat", doctorChat);
 router.get("/profile/:doctorId", viewDoctorProfile);
+router.get("/get-doctors", getAllDoctors);
 
 export default router;

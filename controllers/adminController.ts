@@ -9,9 +9,9 @@ export const addCourse = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { name, description, instructor } = req.body;
+  const { title, description, instructor } = req.body;
   try {
-    const course = await createCourse({ name, description, instructor });
+    const course = await createCourse({ title, description, instructor });
     res.status(201).json(course);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -66,7 +66,9 @@ export const addTeacher = async (
       "INSERT INTO teachers (id_assigned) VALUES ($1)",
       [teacherId]
     );
-    return res.status(201).json({ message: "Teacher added successfully" });
+    return res
+      .status(201)
+      .json({ message: "Teacher added successfully", result: result.rows[0] });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

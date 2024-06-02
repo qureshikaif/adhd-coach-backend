@@ -2,6 +2,7 @@ import { getAppointmentsByDoctorId } from "../models/appointmentModel";
 import { findUserById } from "../models/userModel";
 import { createChatMessage } from "../models/chatModel";
 import express from "express";
+import pool from "../db";
 
 export const viewAppointments = async (
   req: express.Request,
@@ -63,6 +64,21 @@ export const viewDoctorProfile = async (
   try {
     const doctor = await findUserById(doctorId);
     res.status(200).json(doctor);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getAllDoctors = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const result = await pool.query("SELECT * FROM doctors");
+    const doctorsWithRole = result.rows.map((doctor) => {
+      return { ...doctor, role: "doctor" };
+    });
+    res.status(200).json(doctorsWithRole);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

@@ -3,6 +3,7 @@ import { getAllArticles } from "../models/articleModel";
 import { createChatMessage } from "../models/chatModel";
 import { findUserById } from "../models/userModel";
 import express from "express";
+import pool from "../db";
 
 export const viewChildProgress = async (
   req: express.Request,
@@ -17,17 +18,17 @@ export const viewChildProgress = async (
   }
 };
 
-export const readArticles = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  try {
-    const articles = await getAllArticles();
-    res.status(200).json(articles);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
+// export const readArticles = async (
+//   req: express.Request,
+//   res: express.Response
+// ) => {
+//   try {
+//     const articles = await getAllArticles();
+//     res.status(200).json(articles);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error });
+//   }
+// };
 
 export const parentChat = async (
   req: express.Request,
@@ -50,6 +51,21 @@ export const viewParentProfile = async (
   try {
     const parent = await findUserById(parentId);
     res.status(200).json(parent);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getAllParents = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const result = await pool.query("SELECT * FROM parents");
+    const parentsWithRole = result.rows.map((parent) => {
+      return { ...parent, role: "parent" };
+    });
+    res.status(200).json(parentsWithRole);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

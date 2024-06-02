@@ -2,6 +2,7 @@ import { getCourseById } from "../models/courseModel";
 import { createChatMessage, getChatMessages } from "../models/chatModel";
 import { findUserById } from "../models/userModel";
 import express from "express";
+import pool from "../db";
 
 export const viewCourseStatistics = async (
   req: express.Request,
@@ -44,6 +45,34 @@ export const viewTeacherProfile = async (
   try {
     const teacher = await findUserById(teacherId);
     res.status(200).json(teacher);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getAllTeachers = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const result = await pool.query("SELECT * FROM teachers");
+    const teachersWithRole = result.rows.map((teacher) => {
+      return { ...teacher, role: "teacher" };
+    });
+    res.status(200).json(teachersWithRole);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getNumberOfTeachers = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const result = await pool.query("SELECT COUNT(*) FROM teachers");
+
+    res.status(200).json(result.rows[0].count);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

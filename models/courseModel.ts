@@ -1,11 +1,12 @@
 import pool from "../db";
+import express from "express";
 import { CourseType } from "../types/CourseType";
 
 export const createCourse = async (course: CourseType) => {
-  const { name, description, instructor } = course;
+  const { title, description, instructor } = course;
   const result = await pool.query(
-    "INSERT INTO courses (name, description, instructor) VALUES ($1, $2, $3) RETURNING *",
-    [name, description, instructor]
+    "INSERT INTO courses (title, description, instructor) VALUES ($1, $2, $3) RETURNING *",
+    [title, description, instructor]
   );
   return result.rows[0];
 };
@@ -15,7 +16,14 @@ export const getCourseById = async (id: string) => {
   return result.rows[0];
 };
 
-export const getAllCourses = async () => {
-  const result = await pool.query("SELECT * FROM courses");
-  return result.rows;
+export const getAllCourses = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const result = await pool.query("SELECT * FROM courses");
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
 };

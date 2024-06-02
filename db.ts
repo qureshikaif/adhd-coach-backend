@@ -92,7 +92,7 @@ createTable(
 createTable(
   "courses",
   `id SERIAL PRIMARY KEY,
-   name TEXT,
+   title TEXT,
    description TEXT,
    instructor INT REFERENCES teachers(id_assigned),
    rating TEXT,

@@ -1,5 +1,5 @@
 export type CourseType = {
-  name: string;
+  title: string;
   description: string;
   instructor: string;
   rating?: string;
