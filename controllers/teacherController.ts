@@ -205,3 +205,72 @@ export const addQuiz = async (req: express.Request, res: express.Response) => {
     res.status(500).send({ success: false, error: "Database error" });
   }
 };
+
+export const getStudentCourseCount = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const teacherId = req.params.id;
+
+  const query = `
+    SELECT COUNT(DISTINCT sc.student_id) AS total_students
+    FROM teachers t
+    JOIN courses c ON t.id_assigned = c.instructor
+    JOIN student_courses sc ON c.id = sc.course_id
+    WHERE t.id_assigned = $1;
+  `;
+
+  try {
+    const result = await pool.query(query, [teacherId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Teacher or courses not found" });
+    }
+
+    return res.status(200).json({ count: result.rows[0].total_students });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getStudentCourseDetails = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const teacherId = req.params.id;
+
+  const query = `
+    SELECT 
+      s.id_assigned AS student_id,
+      s.full_name AS student_name,
+      s.email AS student_email,
+      c.title AS course_title,
+      COUNT(l.id) AS lectures_covered,
+      q.title AS quiz_title,
+      COALESCE(qs.scores, '[]') AS quiz_scores
+    FROM teachers t
+    JOIN courses c ON t.id_assigned = c.instructor
+    JOIN student_courses sc ON c.id = sc.course_id
+    JOIN students s ON sc.student_id = s.id_assigned
+    LEFT JOIN quizzes q ON c.id = q.course_id
+    LEFT JOIN quiz_scores qs ON q.id = qs.quiz_id AND s.id_assigned = qs.student_id
+    LEFT JOIN lectures l ON c.id = l.course_id
+    WHERE t.id_assigned = $1
+    GROUP BY s.id_assigned, s.full_name, s.email, c.title, q.title, qs.scores
+    ORDER BY s.full_name;
+  `;
+
+  try {
+    const result = await pool.query(query, [teacherId]);
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No students or courses found for this teacher" });
+    }
+
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
