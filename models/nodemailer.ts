@@ -48,3 +48,20 @@ export const sendTeacherIdByEmail = async (
     throw new Error("Failed to send email");
   }
 };
+
+export const sendOTP = async (email: string, otp: string) => {
+  try {
+    const mailOptions = {
+      from: "kaifqureshi.dev@gmail.com", // Sender address (your Gmail address)
+      to: email, // Receiver address
+      subject: "Account Recovery", // Email subject
+      text: `Your Email verification code is: ${otp}`, // Plain text body
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log("NODE MAILER RESPONSE", result);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
+};

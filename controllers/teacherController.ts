@@ -92,24 +92,24 @@ export const getAllTeacherCourses = async (
         t.full_name,
         t.email,
         t.password,
-        t.personal_info,
         json_agg(
           json_build_object(
             'id', c.id,
-            'title', c.title,
-            'description', c.description
+            'title', c.title
           )
         ) AS courses
       FROM teachers t
       LEFT JOIN courses c ON t.id_assigned = c.instructor
       WHERE t.id_assigned = $1
-      GROUP BY t.id, t.id_assigned, t.full_name, t.email, t.password, t.personal_info;
+      GROUP BY t.id, t.id_assigned, t.full_name, t.email, t.password;
     `;
 
     const result = await pool.query(teacherQuery, [teacherId]);
 
     if (result.rows.length === 0) {
-      res.status(404).json({ messgae: "Teacher with id_assigned not found" });
+      return res
+        .status(404)
+        .json({ message: "Teacher with id_assigned not found" });
     }
 
     return res.status(200).json(result.rows[0]);
