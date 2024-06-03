@@ -8,6 +8,10 @@ import { getReviewsByCourseId } from "../models/reviewModel";
 import { createChatMessage } from "../models/chatModel";
 import pool from "../db";
 import express from "express";
+import {
+  sendDoctorIdByEmail,
+  sendTeacherIdByEmail,
+} from "../models/nodemailer";
 
 export const addCourse = async (
   req: express.Request,
@@ -50,12 +54,15 @@ export const addDoctor = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { doctorId } = req.body;
+  const { doctorId, email } = req.body;
   try {
     const result = await pool.query(
       "INSERT INTO doctors (id_assigned) VALUES ($1) RETURNING *",
       [doctorId]
     );
+
+    await sendDoctorIdByEmail(email, doctorId);
+
     return res
       .status(201)
       .json({ message: "Doctor added successfully", result: result.rows[0] });
@@ -68,13 +75,15 @@ export const addTeacher = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { teacherId } = req.body;
+  const { teacherId, email } = req.body;
   console.log(teacherId);
   try {
     const result = await pool.query(
       "INSERT INTO teachers (id_assigned) VALUES ($1)",
       [teacherId]
     );
+
+    await sendTeacherIdByEmail(email, teacherId);
     return res
       .status(201)
       .json({ message: "Teacher added successfully", result: result.rows[0] });
