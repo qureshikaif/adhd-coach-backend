@@ -3,24 +3,24 @@ import "dotenv/config";
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
-const pool = new Pool({
-  host: "localhost",
-  database: "adhdcoach",
-  user: "postgres",
-  password: "db123",
-  port: 5432,
-});
-
 // const pool = new Pool({
-//   host: PGHOST,
-//   database: PGDATABASE,
-//   user: PGUSER,
-//   password: PGPASSWORD,
+//   host: "localhost",
+//   database: "adhdcoach",
+//   user: "postgres",
+//   password: "db123",
 //   port: 5432,
-//   ssl: {
-//     rejectUnauthorized: false,
-//   },
 // });
+
+const pool = new Pool({
+  host: PGHOST,
+  database: PGDATABASE,
+  user: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 const createTable = async (tableName: string, columns: string) => {
   const result = await pool.query(
@@ -118,10 +118,24 @@ createTable(
 
 // Reviews table
 createTable(
-  "feedbacks",
+  "doctor_feedbacks",
   `id SERIAL PRIMARY KEY,
     feedback TEXT,
-   user_id INT REFERENCES students(id)`
+   user_id INT REFERENCES doctors(id)`
+);
+
+createTable(
+  "teacher_feedbacks",
+  `id SERIAL PRIMARY KEY,
+    feedback TEXT,
+   user_id INT REFERENCES teachers(id)`
+);
+
+createTable(
+  "parent_feedbacks",
+  `id SERIAL PRIMARY KEY,
+    feedback TEXT,
+   user_id INT REFERENCES parents(id)`
 );
 
 createTable(
@@ -152,14 +166,29 @@ createTable(
 createTable(
   "quizzes",
   `id SERIAL PRIMARY KEY,
-  question TEXT,
-  option_1 TEXT,
-  option_2 TEXT,
-  option_3 TEXT,
-  option_4 TEXT,
-  answer TEXT,
+  title TEXT NOT NULL,
   instructor INT REFERENCES teachers(id_assigned)`
 );
+
+createTable(
+  "quiz_questions",
+  `id SERIAL PRIMARY KEY,
+  quiz_id INT REFERENCES quizzes(id) ON DELETE CASCADE,
+  question TEXT NOT NULL,
+  option_1 TEXT NOT NULL,
+  option_2 TEXT NOT NULL,
+  option_3 TEXT NOT NULL,
+  option_4 TEXT NOT NULL,
+  answer TEXT NOT NULL`
+);
+
+createTable(
+  "quiz_scores",
+  `quiz_id INT REFERENCES quizzes(id) ON DELETE CASCADE,
+  student_id INT REFERENCES students(id_assigned),
+  teacher_id INT REFERENCES teachers(id_assigned),
+  scores TEXT`
+)
 
 createTable(
   "lectures",

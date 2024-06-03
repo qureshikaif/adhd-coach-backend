@@ -10,6 +10,7 @@ import {
 } from "../controllers/adminController";
 import { getAllArticles } from "../models/articleModel";
 import { getAllCourses } from "../models/courseModel";
+import { getAllFeedbacks } from "../models/feedback";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.post("/teacher", addTeacher);
 router.post("/doctor", addDoctor);
 router.get("/get-articles", getAllArticles);
 router.get("/get-courses", getAllCourses);
+router.get("/all-feedbacks", getAllFeedbacks)
 
 export default router;

@@ -3,6 +3,7 @@ import { findUserById } from "../models/userModel";
 import { createChatMessage } from "../models/chatModel";
 import express from "express";
 import pool from "../db";
+import { createFeedback } from "../models/feedback";
 
 export const viewAppointments = async (
   req: express.Request,
@@ -82,6 +83,16 @@ export const getAllDoctors = async (
       return { ...doctor, role: "doctor" };
     });
     res.status(200).json(doctorsWithRole);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const addDoctorFeedback = async (req: express.Request, res: express.Response) => {
+  const { feedback, userId } = req.body;
+  try {
+    const newFeedback = await createFeedback("doctor_feedbacks", feedback, userId);
+    res.status(201).json(newFeedback);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

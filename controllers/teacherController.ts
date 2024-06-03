@@ -3,6 +3,7 @@ import { createChatMessage, getChatMessages } from "../models/chatModel";
 import { findUserById } from "../models/userModel";
 import express from "express";
 import pool from "../db";
+import { createFeedback } from "../models/feedback";
 
 export const viewCourseStatistics = async (
   req: express.Request,
@@ -114,5 +115,15 @@ export const getAllTeacherCourses = async (
     return res.status(200).json(result.rows[0]);
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const addTeacherFeedback = async (req: express.Request, res: express.Response) => {
+  const { feedback, userId } = req.body;
+  try {
+    const newFeedback = await createFeedback("teacher_feedbacks", feedback, userId);
+    res.status(201).json(newFeedback);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };
