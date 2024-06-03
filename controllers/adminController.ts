@@ -13,14 +13,14 @@ export const addCourse = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { title, description, instructor } = req.body;
+  const { title, instructor, compulsory } = req.body;
   try {
     const existingCourse = await findCourseByTitle(title);
     if (existingCourse) {
       return res.status(400).json({ message: "Course already exists" });
     }
 
-    const course = await createCourse({ title, description, instructor });
+    const course = await createCourse({ title, instructor, compulsory });
     res.status(201).json(course);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

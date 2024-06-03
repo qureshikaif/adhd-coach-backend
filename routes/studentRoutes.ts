@@ -1,19 +1,16 @@
 import express from "express";
 import {
-  takeAssessment,
-  playGames,
-  giveGrandTest,
   getAllStudents,
   getNumberOfStudents,
+  getCourses,
+  enrollInCourse,
 } from "../controllers/studentController";
 
 const router = express.Router();
 
-router.post("/assessment", takeAssessment);
-router.post("/games", playGames);
-router.post("/grand-test", giveGrandTest);
 router.get("/get-students", getAllStudents);
 router.get("/get-number", getNumberOfStudents);
-// router.post("/signup", signup);
+router.get("/get-courses/:id", getCourses);
+router.post("/enroll", enrollInCourse);
 
 export default router;

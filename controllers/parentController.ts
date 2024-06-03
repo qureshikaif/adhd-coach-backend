@@ -19,10 +19,17 @@ export const viewChildProgress = async (
   }
 };
 
-export const addParentFeedback = async (req: express.Request, res: express.Response) => {
+export const addParentFeedback = async (
+  req: express.Request,
+  res: express.Response
+) => {
   const { feedback, userId } = req.body;
   try {
-    const newFeedback = await createFeedback("parent_feedbacks", feedback, userId);
+    const newFeedback = await createFeedback(
+      "parent_feedbacks",
+      feedback,
+      userId
+    );
     res.status(201).json(newFeedback);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -62,7 +69,7 @@ export const getAllParents = async (
   try {
     const result = await pool.query("SELECT * FROM parents");
     const parentsWithRole = result.rows.map((parent) => {
-      return { ...parent, role: "parent" };
+      return { ...parent, role: "Parent" };
     });
     res.status(200).json(parentsWithRole);
   } catch (error) {

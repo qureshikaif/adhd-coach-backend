@@ -2,13 +2,14 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail, findUserById } from "../models/userModel";
+import pool from "../db";
 
 const signup = async (req: express.Request, res: express.Response) => {
   const { fullName, email, password, role, id } = req.body;
   try {
     const existingUser = await findUserByEmail(email, role);
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists " });
+      return res.status(400).json({ message: "Email already exists" });
     }
     if (role.toLowerCase() === "student") {
       const studentId = Math.floor(Math.random() * 1000000);
@@ -20,6 +21,17 @@ const signup = async (req: express.Request, res: express.Response) => {
         role,
         id: String(studentId),
       });
+
+      const compulsoryCourses = await pool.query(
+        "SELECT id FROM courses WHERE compulsory = true"
+      );
+
+      for (const course of compulsoryCourses.rows) {
+        await pool.query(
+          "INSERT INTO student_courses (student_id, course_id) VALUES ($1, $2)",
+          [studentId, course.id]
+        );
+      }
 
       res.status(201).json(newUser);
     } else if (
@@ -42,7 +54,7 @@ const signup = async (req: express.Request, res: express.Response) => {
         return res.status(400).json({ message: "Invalid ID" });
       }
     } else if (role.toLowerCase() === "parent") {
-      const existingId = await findUserById(id, "parent");
+      const existingId = await findUserById(id, "student");
       if (existingId) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await createUser({

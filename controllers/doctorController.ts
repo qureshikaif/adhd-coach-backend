@@ -80,7 +80,7 @@ export const getAllDoctors = async (
   try {
     const result = await pool.query("SELECT * FROM doctors");
     const doctorsWithRole = result.rows.map((doctor) => {
-      return { ...doctor, role: "doctor" };
+      return { ...doctor, role: "Doctor" };
     });
     res.status(200).json(doctorsWithRole);
   } catch (error) {
@@ -88,10 +88,17 @@ export const getAllDoctors = async (
   }
 };
 
-export const addDoctorFeedback = async (req: express.Request, res: express.Response) => {
+export const addDoctorFeedback = async (
+  req: express.Request,
+  res: express.Response
+) => {
   const { feedback, userId } = req.body;
   try {
-    const newFeedback = await createFeedback("doctor_feedbacks", feedback, userId);
+    const newFeedback = await createFeedback(
+      "doctor_feedbacks",
+      feedback,
+      userId
+    );
     res.status(201).json(newFeedback);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
