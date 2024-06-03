@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  teacherChat,
   getAllTeachers,
   getNumberOfTeachers,
   getAllTeacherCourses,
@@ -11,7 +10,6 @@ import {
 
 const router = express.Router();
 
-router.post("/chat", teacherChat);
 router.get("/get-teachers", getAllTeachers);
 router.get("/get-number", getNumberOfTeachers);
 router.get("/get-courses/:id", getAllTeacherCourses);
