@@ -244,10 +244,11 @@ export const getStudentCourseDetails = async (
       s.id_assigned AS student_id,
       s.full_name AS student_name,
       s.email AS student_email,
+      c.id AS course_id, /* Add course_id to the selection */
       c.title AS course_title,
       COUNT(l.id) AS lectures_covered,
       q.title AS quiz_title,
-      COALESCE(qs.scores, '[]') AS quiz_scores
+      COALESCE(qs.scores, 'N/A') AS quiz_scores
     FROM teachers t
     JOIN courses c ON t.id_assigned = c.instructor
     JOIN student_courses sc ON c.id = sc.course_id
@@ -256,7 +257,7 @@ export const getStudentCourseDetails = async (
     LEFT JOIN quiz_scores qs ON q.id = qs.quiz_id AND s.id_assigned = qs.student_id
     LEFT JOIN lectures l ON c.id = l.course_id
     WHERE t.id_assigned = $1
-    GROUP BY s.id_assigned, s.full_name, s.email, c.title, q.title, qs.scores
+    GROUP BY s.id_assigned, s.full_name, s.email, c.id, c.title, q.title, qs.scores
     ORDER BY s.full_name;
   `;
 
@@ -269,8 +270,49 @@ export const getStudentCourseDetails = async (
         .json({ message: "No students or courses found for this teacher" });
     }
 
-    return res.status(200).json(result.rows);
+    const processedResult = result.rows.reduce((acc, row) => {
+      if (!acc[row.student_id]) {
+        acc[row.student_id] = {
+          student_id: row.student_id,
+          student_name: row.student_name,
+          student_email: row.student_email,
+          courses: [],
+        };
+      }
+
+      acc[row.student_id].courses.push({
+        course_id: row.course_id, // Include course_id in the response
+        course_title: row.course_title,
+        lectures_covered: row.lectures_covered,
+        quiz_title: row.quiz_title,
+        quiz_scores: row.quiz_scores,
+      });
+
+      return acc;
+    }, {});
+
+    return res.status(200).json(Object.values(processedResult));
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const addProgressReport = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { student, course, teacher, score, remarks } = req.body;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO progress_reports (student_id, course_id, teacher_id, score, remarks)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [student, course, teacher, score, remarks]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
 };

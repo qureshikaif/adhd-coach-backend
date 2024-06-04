@@ -71,7 +71,7 @@ export const findUserById = async (id: string, role?: string) => {
   if (!role) {
     return null;
   }
-
+  console.log(role, id);
   if (role.toLowerCase() === "teacher" || role.toLowerCase() === "doctor") {
     const result = await pool.query(
       `SELECT * FROM ${role.toLowerCase()}s WHERE id_assigned = $1`,

@@ -92,35 +92,6 @@ export const addTeacher = async (
   }
 };
 
-export const viewUserProfiles = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  const { role } = req.params;
-  try {
-    const users = await pool.query("SELECT * FROM users WHERE role = $1", [
-      role,
-    ]);
-    res.status(200).json(users.rows);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
-
-export const viewCourseDetails = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  const { courseId } = req.params;
-  try {
-    const course = await getCourseById(courseId);
-    const reviews = await getReviewsByCourseId(courseId);
-    res.status(200).json({ course, reviews });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
-
 export const adminChat = async (
   req: express.Request,
   res: express.Response

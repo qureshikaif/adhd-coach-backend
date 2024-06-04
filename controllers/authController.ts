@@ -55,7 +55,9 @@ const signup = async (req: express.Request, res: express.Response) => {
         return res.status(400).json({ message: "Invalid ID" });
       }
     } else if (role.toLowerCase() === "parent") {
-      const existingId = await findUserById(id, "student");
+      console.log("try");
+      console.log(id);
+      const existingId = await findUserById(id, "parent");
       if (existingId) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await createUser({
