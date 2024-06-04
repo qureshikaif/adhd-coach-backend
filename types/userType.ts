@@ -4,4 +4,5 @@ export type UserType = {
   password: string;
   role: string;
   id?: string;
+  specialization?: string;
 };

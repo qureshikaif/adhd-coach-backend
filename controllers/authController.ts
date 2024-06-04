@@ -6,7 +6,7 @@ import pool from "../db";
 import { sendOTP } from "../models/nodemailer";
 
 const signup = async (req: express.Request, res: express.Response) => {
-  const { fullName, email, password, role, id } = req.body;
+  const { fullName, email, password, role, id, specialization } = req.body;
   try {
     const existingUser = await findUserByEmail(email, role);
     if (existingUser) {
@@ -35,10 +35,7 @@ const signup = async (req: express.Request, res: express.Response) => {
       }
 
       res.status(201).json(newUser);
-    } else if (
-      role.toLowerCase() === "teacher" ||
-      role.toLowerCase() === "doctor"
-    ) {
+    } else if (role.toLowerCase() === "teacher") {
       const existingId = await findUserById(id, role);
       if (existingId) {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,6 +45,23 @@ const signup = async (req: express.Request, res: express.Response) => {
           password: hashedPassword,
           role,
           id,
+        });
+
+        res.status(201).json(newUser);
+      } else {
+        return res.status(400).json({ message: "Invalid ID" });
+      }
+    } else if (role.toLowerCase() === "doctor") {
+      const existingId = await findUserById(id, role);
+      if (existingId) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await createUser({
+          fullName,
+          email,
+          password: hashedPassword,
+          role,
+          id,
+          specialization,
         });
 
         res.status(201).json(newUser);
@@ -133,7 +147,7 @@ const forgotPasswordEmail = async (
     }
 
     sendOTP(email, otp);
-    res.status(200).json({ message: "OTP sent successfully" });
+    res.status(200).json({ message: "OTP sent successfully", otp });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

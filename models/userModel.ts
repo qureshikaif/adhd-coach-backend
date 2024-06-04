@@ -2,8 +2,8 @@ import pool from "../db";
 import { UserType } from "../types/userType";
 
 export const createUser = async (user: UserType) => {
-  const { fullName, email, password, role, id } = user;
-  if (role.toLowerCase() === "teacher" || role.toLowerCase() === "doctor") {
+  const { fullName, email, password, role, id, specialization } = user;
+  if (role.toLowerCase() === "teacher") {
     if (id) {
       const result = await pool.query(
         `UPDATE ${role.toLowerCase()}s SET full_name = $1, email = $2, password = $3 WHERE id_assigned = $4 RETURNING *`,
@@ -11,7 +11,18 @@ export const createUser = async (user: UserType) => {
       );
       return result.rows[0];
     }
-  } else if (role.toLowerCase() === "parent") {
+  }
+  else if (role.toLowerCase() === "doctor") {
+    if (id && specialization) {
+      const result = await pool.query(
+        `UPDATE ${role.toLowerCase()}s SET full_name = $1, email = $2, password = $3, specialization = $4 WHERE id_assigned = $5 RETURNING *`,
+        [fullName, email, password, specialization, id]
+      );
+      return result.rows[0];
+    }
+  }
+  
+  else if (role.toLowerCase() === "parent") {
     if (id) {
       const result = await pool.query(
         `INSERT INTO ${role.toLowerCase()}s (full_name, email, password, child_id) VALUES ($1, $2, $3, $4) RETURNING *`,

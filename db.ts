@@ -233,7 +233,8 @@ createTable(
    image TEXT,
    full_name TEXT,
    email TEXT UNIQUE,
-   password TEXT`
+   password TEXT,
+   specialization TEXT`
 );
 
 // Student table
