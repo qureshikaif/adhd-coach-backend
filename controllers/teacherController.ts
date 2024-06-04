@@ -139,9 +139,9 @@ export const addLecture = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { lectureLink, courseId, instructorId } = req.body;
+  const { lecture, courseId, instructorId } = req.body;
 
-  if (!lectureLink || !courseId || !instructorId) {
+  if (!lecture || !courseId || !instructorId) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -164,7 +164,7 @@ export const addLecture = async (
 
     const insertResult = await pool.query(
       "INSERT INTO lectures (lecture_link, course_id, instructor) VALUES ($1, $2, $3) RETURNING *",
-      [lectureLink, courseId, instructorId]
+      [lecture, courseId, instructorId]
     );
 
     res.status(201).json(insertResult.rows[0]);

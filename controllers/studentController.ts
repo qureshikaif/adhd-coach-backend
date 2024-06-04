@@ -40,70 +40,69 @@ export const getCourses = async (
   }
 
   try {
-    const query = `
+    const coursesQuery = `
       SELECT 
-        c.id AS course_id, 
-        c.title AS course_title, 
-        c.compulsory AS course_compulsory, 
-        t.id_assigned AS teacher_id,
-        t.full_name AS teacher_name, 
-        t.email AS teacher_email 
+        courses.*, 
+        enrolled_date,
+        teachers.id_assigned AS teacher_id,
+        teachers.full_name AS teacher_name, 
+        teachers.email AS teacher_email 
       FROM 
-        student_courses sc
+        student_courses
       JOIN 
-        courses c ON sc.course_id = c.id
+        courses ON student_courses.course_id = courses.id
       JOIN 
-        teachers t ON c.instructor = t.id_assigned
+        teachers ON courses.instructor = teachers.id_assigned
       WHERE 
-        sc.student_id = $1
+        student_courses.student_id = $1
     `;
 
-    const result = await pool.query(query, [studentId]);
+    const courses = await pool.query(coursesQuery, [studentId]);
 
-    if (result.rowCount === 0) {
+    if (courses.rowCount === 0) {
       return res
         .status(404)
         .json({ message: "No courses found for this student" });
     }
 
-    for (const row of result.rows) {
-      const lecturesQuery = `
-        SELECT 
-          id, 
-          lecture_link 
-        FROM 
-          lectures 
-        WHERE 
-          course_id = $1
-      `;
-      const lecturesResult = await pool.query(lecturesQuery, [row.course_id]);
-      row.lectures = lecturesResult.rows;
+    const courseData = await Promise.all(
+      courses.rows.map(async (course) => {
+        const lecturesQuery = `
+          SELECT * FROM lectures WHERE course_id = $1`;
+        const lectures = await pool.query(lecturesQuery, [course.id]);
 
-      const quizzesQuery = `
-        SELECT 
-          q.id AS quiz_id,
-          q.title AS quiz_title,
-          qq.id AS question_id,
-          qq.question AS question,
-          qq.option_1,
-          qq.option_2,
-          qq.option_3,
-          qq.option_4,
-          qq.answer
-        FROM 
-          quizzes q
-        JOIN 
-          quiz_questions qq ON q.id = qq.quiz_id
-        WHERE 
-          q.course_id = $1
-      `;
-      const quizzesResult = await pool.query(quizzesQuery, [row.course_id]);
-      row.quizzes = quizzesResult.rows;
-    }
+        const quizzesQuery = `
+          SELECT 
+            quizzes.*, 
+            array_agg(
+              json_build_object(
+                'question_id', quiz_questions.id,
+                'title', quiz_questions.question,
+                'options', ARRAY[quiz_questions.option_1, quiz_questions.option_2, quiz_questions.option_3, quiz_questions.option_4],
+                'correct_answer', quiz_questions.answer
+              )
+            ) AS questions 
+          FROM quizzes 
+          LEFT JOIN quiz_questions ON quizzes.id = quiz_questions.quiz_id 
+          WHERE course_id = $1 
+          GROUP BY quizzes.id
+        `;
+        const quizzes = await pool.query(quizzesQuery, [course.id]);
 
-    res.status(200).json(result.rows);
+        return {
+          ...course,
+          lectures: lectures.rows,
+          quizzes: quizzes.rows.map((quiz) => ({
+            ...quiz,
+            questions: quiz.questions.filter((q: any) => q !== null),
+          })),
+        };
+      })
+    );
+
+    return res.status(200).json(courseData);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -153,5 +152,93 @@ export const enrollInCourse = async (
   } catch (error) {
     console.error("Error enrolling student:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getCompulsoryCourses = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const courses = await pool.query(`
+      SELECT 
+        courses.*, 
+        teachers.id_assigned AS teacher_id, 
+        teachers.full_name AS teacher_name 
+      FROM courses 
+      LEFT JOIN teachers ON courses.instructor = teachers.id_assigned
+      WHERE courses.title IN ('Maths', 'English') AND courses.compulsory = true
+    `);
+
+    const courseData = await Promise.all(
+      courses.rows.map(async (course) => {
+        const lectures = await pool.query(
+          `
+        SELECT * FROM lectures WHERE course_id = $1
+      `,
+          [course.id]
+        );
+
+        const quizzes = await pool.query(
+          `
+        SELECT 
+          quizzes.*, 
+          array_agg(
+            json_build_object(
+              'question_id', quiz_questions.id,
+              'title', quiz_questions.question,
+              'options', ARRAY[quiz_questions.option_1, quiz_questions.option_2, quiz_questions.option_3, quiz_questions.option_4],
+              'correct_answer', quiz_questions.answer
+            )
+          ) AS questions 
+        FROM quizzes 
+        LEFT JOIN quiz_questions ON quizzes.id = quiz_questions.quiz_id 
+        WHERE course_id = $1 
+        GROUP BY quizzes.id
+      `,
+          [course.id]
+        );
+
+        return {
+          ...course,
+          lectures: lectures.rows,
+          quizzes: quizzes.rows.map((quiz: any) => ({
+            ...quiz,
+            questions: quiz.questions.filter((q: any) => q !== null),
+          })),
+        };
+      })
+    );
+
+    return res.status(200).json(courseData);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const submitQuiz = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { quizId, studentId, teacherId, scores } = req.body;
+
+  try {
+    const existingScore = await pool.query(
+      "SELECT * FROM quiz_scores WHERE quiz_id = $1 AND student_id = $2",
+      [quizId, studentId]
+    );
+
+    if (existingScore.rowCount === 0) {
+      await pool.query(
+        "INSERT INTO quiz_scores (quiz_id, student_id, teacher_id, scores) VALUES ($1, $2, $3, $4)",
+        [quizId, studentId, teacherId, scores]
+      );
+      res.json({ message: "Quiz submitted successfully." });
+    } else {
+      res.status(400).json({ message: "Quiz already submitted." });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
 };
