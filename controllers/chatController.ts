@@ -40,3 +40,27 @@ export const sendMessage = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const checkOrCreateChat = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { userId } = req.params;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM chats
+         WHERE sender_id = $1 OR receiver_id = $1
+         ORDER BY timestamp`,
+      [userId]
+    );
+
+    if (result.rows.length > 0) {
+      res.json({ chats: result.rows });
+    } else {
+      res.json({ message: "No existing chats. Create a new chat." });
+    }
+  } catch (error) {
+    console.error("Error checking or creating chat", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

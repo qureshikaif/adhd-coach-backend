@@ -9,6 +9,7 @@ import {
   getStudentCourseCount,
   getStudentCourseDetails,
   addProgressReport,
+  assignDoctor,
 } from "../controllers/teacherController";
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.post("/add-quiz", addQuiz);
 router.get("/get-count-students/:id", getStudentCourseCount);
 router.get("/get-student-courses/:id", getStudentCourseDetails);
 router.post("/progress-report", addProgressReport);
+router.post("/assign-doctor", assignDoctor);
 
 export default router;

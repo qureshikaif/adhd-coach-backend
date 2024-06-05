@@ -355,7 +355,7 @@ createTable(
 
 // Remarks table
 createTable(
-  "remarks",
+  "doctor_remarks",
   `id SERIAL PRIMARY KEY,
    student_id INT REFERENCES students(id_assigned),
    doctor_id INT REFERENCES doctors(id_assigned),
@@ -382,6 +382,15 @@ createTable(
    tags TEXT,
    content TEXT,
    summary TEXT`
+);
+
+createTable(
+  "doctor_assignments",
+  `id SERIAL PRIMARY KEY,
+   parent_id INT REFERENCES parents(id) ON DELETE CASCADE,
+   student_id INT REFERENCES students(id_assigned) ON DELETE CASCADE,
+   doctor_id INT REFERENCES doctors(id_assigned) ON DELETE CASCADE,
+   assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 );
 
 (async () => {
