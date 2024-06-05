@@ -390,7 +390,16 @@ createTable(
    parent_id INT REFERENCES parents(id) ON DELETE CASCADE,
    student_id INT REFERENCES students(id_assigned) ON DELETE CASCADE,
    doctor_id INT REFERENCES doctors(id_assigned) ON DELETE CASCADE,
-   assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+   assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   UNIQUE (student_id)`
+);
+
+createTable(
+  "mood_entries",
+  `id SERIAL PRIMARY KEY,
+   student_id INT REFERENCES students(id_assigned) ON DELETE CASCADE,
+   mood TEXT NOT NULL,
+   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 );
 
 (async () => {

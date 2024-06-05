@@ -1,5 +1,6 @@
 import pool from "../db";
 import express from "express";
+import { checkCompulsoryCoursesCompletion } from "../models/courseModel";
 
 export const getAllStudents = async (
   req: express.Request,
@@ -305,6 +306,54 @@ export const getOptionalCourses = async (
     );
 
     return res.status(200).json(courseData);
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getMood = async (req: express.Request, res: express.Response) => {
+  const { studentId, mood } = req.body;
+
+  if (!studentId || !mood) {
+    return res.status(400).json({ error: "Student ID and mood are required." });
+  }
+
+  try {
+    await pool.query(
+      "INSERT INTO mood_entries (student_id, mood) VALUES ($1, $2)",
+      [studentId, mood]
+    );
+    return res.status(201).json({ message: "Mood logged successfully." });
+  } catch (error) {
+    console.error("Error logging mood:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+export const checkCompulsoryCourses = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { studentId } = req.body;
+
+  if (!studentId) {
+    return res.status(400).json({ message: "Student ID is required" });
+  }
+
+  try {
+    const result = await checkCompulsoryCoursesCompletion(studentId);
+
+    if (result) {
+      return res.status(200).json({
+        message: `Compulsory courses completed 🎉🎉.\n You can now attempt grand test.`,
+        state: true,
+      });
+    } else {
+      return res.status(200).json({
+        message: "Compulsory courses not yet completed",
+        state: false,
+      });
+    }
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }

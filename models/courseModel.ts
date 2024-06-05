@@ -82,3 +82,42 @@ export const findCourseByTitle = async (title: string) => {
   ]);
   return result.rows[0];
 };
+
+export const checkCompulsoryCoursesCompletion = async (studentId: number) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        (SELECT COUNT(*) FROM quizzes q
+         JOIN quiz_scores qs ON q.id = qs.quiz_id
+         JOIN courses c ON q.course_id = c.id
+         WHERE c.title = 'English' AND qs.student_id = $1) AS english_quiz_count,
+        (SELECT COUNT(*) FROM quizzes q
+         JOIN quiz_scores qs ON q.id = qs.quiz_id
+         JOIN courses c ON q.course_id = c.id
+         WHERE c.title = 'Maths' AND qs.student_id = $1) AS maths_quiz_count
+    `,
+      [studentId]
+    );
+
+    const { english_quiz_count, maths_quiz_count } = result.rows[0];
+
+    if (english_quiz_count > 0 && maths_quiz_count > 0) {
+      await pool.query(
+        `
+        UPDATE students
+        SET compulsory_courses_completed = TRUE
+        WHERE id_assigned = $1
+      `,
+        [studentId]
+      );
+
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error checking compulsory courses completion:", error);
+    throw error;
+  }
+};
