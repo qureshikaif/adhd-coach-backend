@@ -104,3 +104,51 @@ export const addDoctorFeedback = async (
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+export const getStudents = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { doctorId } = req.params;
+
+    const query = `
+    SELECT s.*, pr.remarks AS teacher_remarks, t.full_name AS teacher_name
+    FROM students s
+    INNER JOIN doctor_assignments da ON s.id_assigned = da.student_id
+    LEFT JOIN progress_reports pr ON s.id_assigned = pr.student_id
+    LEFT JOIN teachers t ON pr.teacher_id = t.id_assigned
+    WHERE da.doctor_id = $1
+    `;
+
+    const { rows } = await pool.query(query, [doctorId]);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error fetching students by doctor:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const addRemarks = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { doctorId, studentId, remarks } = req.body;
+
+    const query = `
+      INSERT INTO doctor_remarks (doctor_id, student_id, remark, date)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+      RETURNING *
+    `;
+    const values = [doctorId, studentId, remarks];
+
+    const { rows } = await pool.query(query, values);
+
+    res.status(201).json(rows[0]);
+  } catch (error) {
+    console.error("Error adding doctor remark:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

@@ -106,42 +106,89 @@ const addQuizzes = async () => {
             if (course.title === "English") {
               quizQuestions = [
                 {
-                  question: "What is the capital of England?",
-                  option1: "London",
-                  option2: "Manchester",
-                  option3: "Liverpool",
-                  option4: "Birmingham",
-                  answer: "London",
+                  question: "Which letter comes after 'B'?",
+                  option1: "A",
+                  option2: "D",
+                  option3: "E",
+                  option4: "C",
+                  answer: "C",
                 },
                 {
-                  question: 'Who wrote "Romeo and Juliet"?',
-                  option1: "William Shakespeare",
-                  option2: "Charles Dickens",
-                  option3: "Jane Austen",
-                  option4: "Mark Twain",
-                  answer: "William Shakespeare",
+                  question: "Which letter comes before 'F'?",
+                  option1: "G",
+                  option2: "E",
+                  option3: "D",
+                  option4: "C",
+                  answer: "E",
                 },
-                // Add more English questions here
+                {
+                  question: "What is the first letter of the word 'Apple'?",
+                  option1: "B",
+                  option2: "A",
+                  option3: "C",
+                  option4: "D",
+                  answer: "A",
+                },
+                {
+                  question: "Which letter is the 5th letter of the alphabet?",
+                  option1: "E",
+                  option2: "F",
+                  option3: "D",
+                  option4: "C",
+                  answer: "E",
+                },
+                {
+                  question: "Which letter comes between 'M' and 'O'?",
+                  option1: "L",
+                  option2: "N",
+                  option3: "P",
+                  option4: "Q",
+                  answer: "N",
+                },
               ];
             } else if (course.title === "Maths") {
               quizQuestions = [
                 {
-                  question: "What is the result of 5 * 6?",
-                  option1: "25",
-                  option2: "30",
-                  option3: "35",
-                  option4: "40",
-                  answer: "30",
+                  question: "How many apples are there?\n\n🍎 🍎 🍎 🍎 🍎",
+                  option1: "3",
+                  option2: "5",
+                  option3: "7",
+                  option4: "6",
+                  answer: "5",
                 },
                 {
-                  question: "What is the square root of 64?",
+                  question: "How many stars can you see?\n\n⭐ ⭐ ⭐ ⭐",
                   option1: "4",
                   option2: "6",
-                  option3: "8",
-                  option4: "10",
+                  option3: "5",
+                  option4: "3",
+                  answer: "4",
+                },
+                {
+                  question: "Count the number of ducks.\n\n🦆 🦆 🦆 🦆 🦆 🦆",
+                  option1: "5",
+                  option2: "6",
+                  option3: "7",
+                  option4: "8",
+                  answer: "6",
+                },
+                {
+                  question: "How many balloons are there?\n\n🎈 🎈 🎈",
+                  option1: "4",
+                  option2: "2",
+                  option3: "3",
+                  option4: "5",
+                  answer: "3",
+                },
+                {
+                  question:
+                    "How many cars do you see?\n\n🚗 🚗 🚗 🚗 🚗 🚗 🚗 🚗",
+                  option1: "8",
+                  option2: "7",
+                  option3: "6",
+                  option4: "9",
                   answer: "8",
                 },
-                // Add more Maths questions here
               ];
             }
 
@@ -406,8 +453,14 @@ createTable(
   const englishCourseId = await createCourse("English", true);
   const mathsCourseId = await createCourse("Maths", true);
 
-  await createLecture(englishCourseId, "http://example.com/english1");
-  await createLecture(englishCourseId, "http://example.com/english2");
+  await createLecture(
+    englishCourseId,
+    "https://youtu.be/18YLYboZ6ew?si=C6_2BJ6B5h0kh6tT"
+  );
+  await createLecture(
+    englishCourseId,
+    "https://youtu.be/2SNq5SCdO2U?si=8tgHlM99yiVJy11L"
+  );
 
   await createLecture(mathsCourseId, "http://example.com/maths1");
   await createLecture(mathsCourseId, "http://example.com/maths2");

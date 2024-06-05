@@ -64,3 +64,26 @@ export const checkOrCreateChat = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getUsers = async (req: express.Request, res: express.Response) => {
+  try {
+    const doctorQuery = pool.query(
+      "SELECT id, full_name, email, id_assigned, specialization, 'doctor' AS type FROM doctors"
+    );
+    const teacherQuery = pool.query(
+      "SELECT id, full_name, email, id_assigned, NULL AS specialization, 'teacher' AS type FROM teachers"
+    );
+
+    const [doctorResults, teacherResults] = await Promise.all([
+      doctorQuery,
+      teacherQuery,
+    ]);
+
+    const combinedList = [...doctorResults.rows, ...teacherResults.rows];
+
+    res.status(200).json(combinedList);
+  } catch (error) {
+    console.error("Error fetching combined list:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

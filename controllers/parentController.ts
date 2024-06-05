@@ -123,11 +123,11 @@ export const assignDoctor = async (
   const { parentId, studentId, doctorId } = req.body;
   try {
     const existingAssignment = await pool.query(
-      `SELECT id FROM doctor_assignments WHERE parent_id = $1 AND student_id = $2 AND doctor_id = $3`,
+      `SELECT * FROM doctor_assignments WHERE parent_id = $1 AND student_id = $2 AND doctor_id = $3`,
       [parentId, studentId, doctorId]
     );
 
-    if (existingAssignment) {
+    if (existingAssignment.rows.length > 0) {
       return res
         .status(400)
         .json({ message: "This doctor is already assigned to the student." });
@@ -141,6 +141,69 @@ export const assignDoctor = async (
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("Error assigning doctor", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const checkDoctor = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { childId } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT COUNT(*) FROM doctor_assignments WHERE student_id = $1",
+      [childId]
+    );
+
+    const isDoctorAssigned = result.rows[0].count > 0;
+
+    res.status(200).json({ isDoctorAssigned });
+  } catch (error) {
+    console.error("Error checking doctor assignment:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getChildProgressReport = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { childId } = req.params;
+  try {
+    const progressReport = await pool.query(
+      `SELECT courses.title AS course_name, progress_reports.score, progress_reports.remarks, progress_reports.date,
+              teachers.full_name AS teacher_name, teachers.email AS teacher_email
+       FROM progress_reports
+       JOIN courses ON progress_reports.course_id = courses.id
+       JOIN teachers ON progress_reports.teacher_id = teachers.id_assigned
+       WHERE progress_reports.student_id = $1`,
+      [childId]
+    );
+    res.json(progressReport.rows);
+  } catch (error) {
+    console.error("Error fetching progress report:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getChildDoctorRemarks = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { childId } = req.params;
+  try {
+    const doctorRemarks = await pool.query(
+      `SELECT doctor_remarks.remark, doctor_remarks.date, doctors.full_name AS doctor_name
+       FROM doctor_remarks
+       JOIN doctors ON doctor_remarks.doctor_id = doctors.id_assigned
+       WHERE doctor_remarks.student_id = $1`,
+      [childId]
+    );
+    res.status(200).json(doctorRemarks.rows);
+  } catch (error) {
+    console.error("Error fetching doctor remarks:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
