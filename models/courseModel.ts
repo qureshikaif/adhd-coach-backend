@@ -121,3 +121,14 @@ export const checkCompulsoryCoursesCompletion = async (studentId: number) => {
     throw error;
   }
 };
+
+export const getCoursesWithStudentCount = async () => {
+  const query = `
+    SELECT c.id, c.title, COUNT(sc.student_id) AS student_count
+    FROM courses c
+    LEFT JOIN student_courses sc ON c.id = sc.course_id
+    GROUP BY c.id
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+};

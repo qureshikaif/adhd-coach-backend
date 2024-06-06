@@ -10,6 +10,7 @@ import {
   deleteParent,
   deleteCourse,
   deleteArticle,
+  getCoursesStudentCount,
 } from "../controllers/adminController";
 import { getAllArticles } from "../models/articleModel";
 import { getAllCourses } from "../models/courseModel";
@@ -30,5 +31,6 @@ router.delete("/student/:id", deleteStudent);
 router.delete("/parent/:id", deleteParent);
 router.delete("/course/:id", deleteCourse);
 router.delete("/article/:id", deleteArticle);
+router.get("/course-student", getCoursesStudentCount);
 
 export default router;

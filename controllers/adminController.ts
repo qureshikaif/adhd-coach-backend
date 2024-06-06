@@ -1,4 +1,8 @@
-import { createCourse, findCourseByTitle } from "../models/courseModel";
+import {
+  createCourse,
+  findCourseByTitle,
+  getCoursesWithStudentCount,
+} from "../models/courseModel";
 import { createArticle } from "../models/articleModel";
 import { createChatMessage } from "../models/chatModel";
 import pool from "../db";
@@ -225,5 +229,24 @@ export const deleteArticle = async (
   } catch (error) {
     console.error("Error deleting article:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getCoursesStudentCount = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const courses = await getCoursesWithStudentCount();
+    res.status(200).json({
+      status: "success",
+      data: courses,
+      message: "Retrieved number of students enrolled in each course",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error retrieving course enrollment counts: " + error,
+    });
   }
 };
