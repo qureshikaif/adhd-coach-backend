@@ -94,7 +94,6 @@ const addQuizzes = async () => {
           const quizId = quizInsertResult.rows[0]?.id;
 
           if (quizId) {
-            // Define the type of quizQuestions array
             let quizQuestions: {
               question: string;
               option1: string;
@@ -453,13 +452,11 @@ createTable(
   const englishCourseId = await createCourse("English", true);
   const mathsCourseId = await createCourse("Maths", true);
 
-  await createLecture(
-    englishCourseId,
-    "https://youtu.be/18YLYboZ6ew?si=C6_2BJ6B5h0kh6tT"
-  );
-  await createLecture(englishCourseId, "https://youtu.be/_9Z5BTMqGAw");
+  await createLecture(englishCourseId, "https://youtu.be/18YLYboZ6ew");
+  await createLecture(englishCourseId, "https://youtu.be/fGIwIKfwN7c");
 
   await createLecture(mathsCourseId, "https://youtu.be/S_tXZrDo_gQ");
+  await createLecture(mathsCourseId, "https://youtu.be/_9Z5BTMqGAw");
 
   await addQuizzes();
 })();

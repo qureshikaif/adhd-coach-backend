@@ -1,10 +1,5 @@
-import {
-  createCourse,
-  findCourseByTitle,
-  getCourseById,
-} from "../models/courseModel";
+import { createCourse, findCourseByTitle } from "../models/courseModel";
 import { createArticle } from "../models/articleModel";
-import { getReviewsByCourseId } from "../models/reviewModel";
 import { createChatMessage } from "../models/chatModel";
 import pool from "../db";
 import express from "express";
@@ -102,5 +97,133 @@ export const adminChat = async (
     res.status(201).json(chat);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const deleteTeacher = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM teachers WHERE id = $1 RETURNING *",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).send("Teacher not found");
+    }
+    res.send(result.rows[0]);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
+
+export const deleteDoctor = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM doctors WHERE id = $1 RETURNING *",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).send("Doctor not found");
+    }
+    res.send(result.rows[0]);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
+
+export const deleteStudent = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM students WHERE id = $1 RETURNING *",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).send("Student not found");
+    }
+    res.send(result.rows[0]);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
+
+export const deleteParent = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM parents WHERE id = $1 RETURNING *",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).send("Parent not found");
+    }
+    res.send(result.rows[0]);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
+
+export const deleteCourse = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM courses WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    res.json({
+      message: "Course deleted successfully",
+      course: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const deleteArticle = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM articles WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Article not found" });
+    }
+
+    res.json({
+      message: "Article deleted successfully",
+      article: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error deleting article:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
