@@ -437,7 +437,7 @@ createTable(
    parent_id INT REFERENCES parents(id) ON DELETE CASCADE,
    student_id INT REFERENCES students(id_assigned) ON DELETE CASCADE,
    doctor_id INT REFERENCES doctors(id_assigned) ON DELETE CASCADE,
-   assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    UNIQUE (student_id)`
 );
 
@@ -457,13 +457,9 @@ createTable(
     englishCourseId,
     "https://youtu.be/18YLYboZ6ew?si=C6_2BJ6B5h0kh6tT"
   );
-  await createLecture(
-    englishCourseId,
-    "https://youtu.be/2SNq5SCdO2U?si=8tgHlM99yiVJy11L"
-  );
+  await createLecture(englishCourseId, "https://youtu.be/_9Z5BTMqGAw");
 
-  await createLecture(mathsCourseId, "http://example.com/maths1");
-  await createLecture(mathsCourseId, "http://example.com/maths2");
+  await createLecture(mathsCourseId, "https://youtu.be/S_tXZrDo_gQ");
 
   await addQuizzes();
 })();

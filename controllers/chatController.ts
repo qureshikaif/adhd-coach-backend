@@ -73,13 +73,21 @@ export const getUsers = async (req: express.Request, res: express.Response) => {
     const teacherQuery = pool.query(
       "SELECT id, full_name, email, id_assigned, NULL AS specialization, 'teacher' AS type FROM teachers"
     );
+    const parentQuery = pool.query(
+      "SELECT id, full_name, email, child_id, NULL AS specialization, 'parent' AS type FROM parents"
+    );
 
-    const [doctorResults, teacherResults] = await Promise.all([
+    const [doctorResults, teacherResults, parentResults] = await Promise.all([
       doctorQuery,
       teacherQuery,
+      parentQuery,
     ]);
 
-    const combinedList = [...doctorResults.rows, ...teacherResults.rows];
+    const combinedList = [
+      ...doctorResults.rows,
+      ...teacherResults.rows,
+      ...parentResults.rows,
+    ];
 
     res.status(200).json(combinedList);
   } catch (error) {

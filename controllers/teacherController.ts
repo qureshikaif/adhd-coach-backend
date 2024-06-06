@@ -91,17 +91,16 @@ export const getAllTeacherCourses = async (
         t.id_assigned,
         t.full_name,
         t.email,
-        t.password,
         json_agg(
           json_build_object(
             'id', c.id,
             'title', c.title
           )
-        ) AS courses
+        ) FILTER (WHERE c.id IS NOT NULL) AS courses
       FROM teachers t
       LEFT JOIN courses c ON t.id_assigned = c.instructor
       WHERE t.id_assigned = $1
-      GROUP BY t.id, t.id_assigned, t.full_name, t.email, t.password;
+      GROUP BY t.id, t.id_assigned, t.full_name, t.email;
     `;
 
     const result = await pool.query(teacherQuery, [teacherId]);
@@ -114,6 +113,7 @@ export const getAllTeacherCourses = async (
 
     return res.status(200).json(result.rows[0]);
   } catch (error) {
+    console.error("Error fetching teacher courses:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };
