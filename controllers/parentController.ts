@@ -84,7 +84,7 @@ export const getChildPrescriptions = async (
   const childId = req.params.id;
   try {
     const result = await pool.query(
-      `SELECT prescriptions.*, doctors.full_name AS doctor_name, doctors.personal_info AS doctor_info
+      `SELECT prescriptions.*, doctors.full_name AS doctor_name
        FROM prescriptions
        JOIN doctors ON prescriptions.doctor_id = doctors.id_assigned
        WHERE prescriptions.patient_id = $1`,
