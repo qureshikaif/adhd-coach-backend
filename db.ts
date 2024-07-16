@@ -2,24 +2,24 @@ import { Pool } from "pg";
 import "dotenv/config";
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
-const pool = new Pool({
-  host: "localhost",
-  database: "adhdcoach",
-  user: "postgres",
-  password: "db123",
-  port: 5432,
-});
-
 // const pool = new Pool({
-//   host: PGHOST,
-//   database: PGDATABASE,
-//   user: PGUSER,
-//   password: PGPASSWORD,
+//   host: "localhost",
+//   database: "adhdcoach",
+//   user: "postgres",
+//   password: "db123",
 //   port: 5432,
-//   ssl: {
-//     rejectUnauthorized: false,
-//   },
 // });
+
+const pool = new Pool({
+  host: PGHOST,
+  database: PGDATABASE,
+  user: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 const createTable = async (tableName: string, columns: string) => {
   const result = await pool.query(
